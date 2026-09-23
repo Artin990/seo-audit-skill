@@ -74,3 +74,82 @@ Claude: [درخواست robots.txt، sitemap، HTML خام، Rich Results، Page
 ## لایسنس
 
 MIT
+
+
+
+# wp-elementor-seo-audit
+
+A **Claude Skill** for auditing and fixing SEO on WordPress/Elementor pages (typically using Rank Math), based on a real audit-and-fix session on a live site.
+
+## What is this?
+
+A [Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) for Claude — once installed, Claude automatically follows this workflow whenever you ask "why isn't my WordPress/Elementor page ranking":
+
+1. Gather data (robots.txt, sitemap, raw HTML, Rich Results Test, PageSpeed Insights)
+2. Analyze on-page tags (title, meta, canonical, og, schema)
+3. Diagnose the root cause of speed issues (CLS, LCP, Speed Index)
+4. Diagnose accessibility issues
+5. Summarize and prioritize the fix list
+
+Its main value is the *recurring* failure patterns actually observed on a real WordPress/Elementor/Rank Math stack — not just generic SEO advice. For example:
+
+- A Persian/Jalali-date-instead-of-ISO-8601 bug in Rank Math's auto-generated schema
+- A duplicated/irrelevant `Article` schema hiding an empty `FAQPage` node inside it
+- CLS caused by missing pixel-based `width`/`height` HTML attributes on `<img>` tags
+- Misdiagnosing decorative/UI elements (floating stat badges) as content headings
+
+## Installation
+
+### Claude.ai / Claude Desktop / Claude Code
+
+Copy this folder into your skills directory:
+
+```bash
+git clone https://github.com/<your-username>/wp-elementor-seo-audit.git
+cp -r wp-elementor-seo-audit ~/.claude/skills/wp-elementor-seo-audit
+```
+
+(The exact path depends on your client — check the official Agent Skills docs.)
+
+### Using it without installing a Skill (easiest option)
+
+[`references/checklist.md`](./references/checklist.md) is a standalone, condensed version (in Persian). You can just copy its contents into any new chat (Claude or any other model), then give it the URL of the page you want audited — no Skill installation required.
+
+## Project structure
+
+```
+wp-elementor-seo-audit/
+├── SKILL.md              # The main skill file (full instructions)
+├── README.md              # This file
+└── references/
+    └── checklist.md        # Condensed checklist version (Persian), copy-paste ready
+```
+
+## Example session
+
+```
+User: Audit this page, why isn't it ranking?
+      https://example.com/some-page/
+
+Claude: [asks for robots.txt, sitemap, raw HTML, Rich Results, PageSpeed]
+        [analyzes title/meta/canonical/og/schema]
+        [diagnoses CLS/LCP/Speed Index from the PageSpeed data]
+        [diagnoses accessibility issues]
+        [summary table + prioritized fix list]
+```
+
+## Key rules this skill follows
+
+- **Never fetches the site directly** — sandboxed environments usually block network access to arbitrary domains. It always asks the user to supply the data manually.
+- **Never draws conclusions about canonical/og/schema from a converted/extracted text file** — those tags get stripped in HTML-to-text conversion; it insists on the raw HTML.
+- **Backs every claim with exact evidence** — the exact number, the exact error text, the exact line.
+- **Immediately re-diagnoses when the user corrects an assumption**, instead of arguing for its first read.
+- **Keeps site-wide fixes separate from page-specific fixes.**
+
+## Contributing
+
+If you've found another recurring failure pattern in the WordPress/Elementor/Rank Math stack that isn't covered here, open a PR or an Issue.
+
+## License
+
+MIT
